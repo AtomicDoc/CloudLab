@@ -10,6 +10,7 @@ app = FastAPI()
 
 REDIS_HOST = os.getenv("REDIS_HOST", "redis")
 REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
+BASE_URL = os.getenv("BASE_URL", "http://localhost:8080")
 
 r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
 
@@ -43,7 +44,7 @@ def shorten_url(request: URLRequest):
 
     return {
         "short_code": code,
-        "short_url": f"http://localhost:8080/{code}"
+        "short_url": f"{BASE_URL}/{code}"
     }
 
 
