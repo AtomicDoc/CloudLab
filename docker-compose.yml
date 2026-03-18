@@ -1,4 +1,3 @@
-
 services:
   app:
     build: .
@@ -6,6 +5,7 @@ services:
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
+      BASE_URL: http://amdvm133-1.utah.cloudlab.us:8080
     depends_on:
       - redis
     expose:
