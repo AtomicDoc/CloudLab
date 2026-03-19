@@ -13,7 +13,7 @@ node.addService(rspec.Execute(shell="/bin/sh", command="sudo apt install -y apac
 node.addService(rspec.Execute(shell="/bin/sh", command='sudo systemctl status apache2'))
 node.addService(rspec.Execute(
     shell="bash",
-    command="/local/repository/install-docker.sh"
+    command="/local/repository/CloudLab/startup.sh"
 ))
 
 
