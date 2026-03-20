@@ -5,7 +5,7 @@ services:
     environment:
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      BASE_URL: http://ervm059-1.utah.cloudlab.us:8080
+      BASE_URL: ${BASE_URL}
     depends_on:
       redis:
         condition: service_healthy

@@ -35,6 +35,8 @@ def health():
 
 @app.post("/shorten")
 def shorten_url(request: URLRequest):
+
+
     code = generate_code()
 
     while r.exists(code):
