@@ -8,9 +8,9 @@ graph TD
     
     Client -->|HTTP Request<br/>Port 8080| Nginx["Nginx Reverse Proxy<br/>Container: url_nginx<br/>Port: 8080→80"]
     
-    Nginx -->|Forward Request<br/>DNS: url_shortener_app:8000| App["Python/Uvicorn App<br/>Container: url_shortener_app<br/>Port: 8000<br/>(Internal)"]
+    Nginx -->|Forward Request<br/>DNS: url_shortener_app:8000| App["Python/Uvicorn App<br/>Container: url_shortener_app<br/>Port: 8000"]
     
-    App -->|Store/Retrieve URLs<br/>DNS: redis:6379| Redis["Redis Cache<br/>Container: url_redis<br/>Port: 6379<br/>(Internal)"]
+    App -->|Store/Retrieve URLs<br/>DNS: redis:6379| Redis["Redis Cache<br/>Container: url_redis<br/>Port: 6379"]
     
     Redis -->|Return Data| App
     
@@ -18,17 +18,10 @@ graph TD
     
     Nginx -->|HTTP Response<br/>Port 80| Client
     
-    style Client fill:#e1f5ff
-    style Nginx fill:#fff3e0
-    style App fill:#f3e5f5
-    style Redis fill:#e8f5e9
-    
-    subgraph Network["Docker Compose Bridge Network"]
-        App
-        Redis
-    end
-    
-    style Network fill:#fafafa,stroke:#999,stroke-width:2px
+    style Client fill:#a9a9a9,stroke:#333,stroke-width:2px,color:#000
+    style Nginx fill:#a9a9a9,stroke:#333,stroke-width:2px,color:#000
+    style App fill:#a9a9a9,stroke:#333,stroke-width:2px,color:#000
+    style Redis fill:#a9a9a9,stroke:#333,stroke-width:2px,color:#000
 ```
 
 
