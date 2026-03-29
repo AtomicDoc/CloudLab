@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shark Info</title>
+</head>
+<body>
+  <h1>Shark Info - [YOUR NAME]</h1>
+
+  <div id="sharks"></div>
+
+  <script>
+    fetch('/api/sharks')
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById('sharks');
+        if (data.length === 0) {
+          container.innerHTML = '<p>No sharks found.</p>';
+        } else {
+          container.innerHTML = data.map(s => `<p>${JSON.stringify(s)}</p>`).join('');
+        }
+      })
+      .catch(err => console.error(err));
+  </script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  mongodb:
+    build:
+      context: ./docker/mongodb
+    image: shark-info:mongodb
+    container_name: mongodb-container
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: sharkdb
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - shark-network
+
+  nodejs:
+    build:
+      context: ./docker/nodejs
+    image: shark-info:nodejs
+    container_name: nodejs-container
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017/sharkdb
+    volumes:
+      - ./nodejs-app:/app
+    networks:
+      - shark-network
+
+networks:
+  shark-network:
+    name: shark-network
+
+volumes:
+  mongodb_data:
