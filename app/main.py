@@ -5,12 +5,24 @@ import redis
 import os
 import string
 import random
+import socket
 
 app = FastAPI()
 
 REDIS_HOST = os.getenv("REDIS_HOST", "redis")
 REDIS_PORT = int(os.getenv("REDIS_PORT", 6379))
-BASE_URL = os.getenv("BASE_URL", "http://localhost:8080")
+
+
+# Try to get the actual hostname if running on CloudLab
+try:
+    hostname = socket.getfqdn()
+    if 'cloudlab' in hostname.lower() or 'utah' in hostname.lower():
+        BASE_URL = f"http://{hostname}:8080"
+    else:
+        BASE_URL = os.getenv("BASE_URL", "http://localhost:8080")
+except:
+    BASE_URL = os.getenv("BASE_URL", "http://localhost:8080")
+    
 
 r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, decode_responses=True)
 
