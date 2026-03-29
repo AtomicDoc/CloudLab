@@ -16,23 +16,27 @@ services:
     networks:
       - shark-network
 
- nodejs:
-  build:
-    context: .
-    dockerfile: ./docker/nodejs/Dockerfile
-  image: shark-info:nodejs
-  container_name: nodejs-container
-  ports:
-    - "3000:3000"
-  depends_on:
-    - mongodb
-  environment:
-    MONGODB_URI: mongodb://mongodb:27017/sharkdb
-  volumes:
-    - ./nodejs-app:/app
-    - /app/node_modules        
-  networks:
-    - shark-network
+  nodejs:
+    build:
+      context: .
+      dockerfile: ./docker/nodejs/Dockerfile
+    image: shark-info:nodejs
+    container_name: nodejs-container
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongodb
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017/sharkdb
+    volumes:
+      - ./nodejs-app:/app
+      - /app/node_modules        
+    networks:
+      - shark-network
+
+networks:
+  shark-network:
+    name: shark-network
 
 volumes:
   mongodb_data:
