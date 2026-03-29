@@ -17,7 +17,7 @@ cd /local/repository
 
 # Dynamic BASE_URL for this CloudLab node
 HOST=$(hostname -f)
-echo "BASE_URL=http://$HOST:8080" > .env
+echo "BASE_URL=http://$HOST:8080" > /local/repository/.env
 
 # Pull images from registry 
 docker compose pull
