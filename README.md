@@ -8,7 +8,7 @@ graph TD
     
     Client -->|HTTP Request<br/>Port 8080| Nginx["Nginx Reverse Proxy<br/>Container: url_nginx<br/>Port: 8080→80"]
     
-    Nginx -->|Forward Request<br/>DNS: url_shortener_app:8000| App[Python/Uvicorn App<br/>Container: url_shortener_app<br/>Port: 8000<br/>(Internal)"]
+    Nginx -->|Forward Request<br/>DNS: url_shortener_app:8000| App["Python/Uvicorn App<br/>Container: url_shortener_app<br/>Port: 8000<br/>(Internal)"]
     
     App -->|Store/Retrieve URLs<br/>DNS: redis:6379| Redis["Redis Cache<br/>Container: url_redis<br/>Port: 6379<br/>(Internal)"]
     
