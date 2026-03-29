@@ -3,7 +3,8 @@ version: '3.8'
 services:
   mongodb:
     build:
-      context: ./docker/mongodb
+      context: .
+      dockerfile: ./docker/mongodb/Dockerfile
     image: shark-info:mongodb
     container_name: mongodb-container
     ports:
@@ -17,7 +18,8 @@ services:
 
   nodejs:
     build:
-      context: ./docker/nodejs
+      context: .
+      dockerfile: ./docker/nodejs/Dockerfile
     image: shark-info:nodejs
     container_name: nodejs-container
     ports:
