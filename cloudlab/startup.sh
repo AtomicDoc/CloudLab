@@ -10,6 +10,7 @@ sudo systemctl start docker
 
 # Allow current user to run docker
 sudo usermod -aG docker $USER
+sudo newgrp docker
 
 sleep 5
 
