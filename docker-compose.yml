@@ -1,6 +1,6 @@
 services:
   app:
-    image: yourdockerhubusername/cloudlab:latest  # Use registry image instead of build
+    image: theatomicdoc/cloudlab:latest 
     container_name: url_shortener_app
     environment:
       REDIS_HOST: redis
