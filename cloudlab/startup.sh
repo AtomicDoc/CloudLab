@@ -4,10 +4,6 @@
 # Install Docker
 curl -fsSL https://get.docker.com | sh
 
-# Start Docker
-sudo systemctl enable docker
-sudo systemctl start docker
-
 # Allow current user to run docker
 sudo usermod -aG docker $USER
 sudo newgrp docker
