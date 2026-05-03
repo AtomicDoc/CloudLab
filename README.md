@@ -317,8 +317,11 @@ This prevents a process inside the container from gaining additional privileges 
 The Compose file sets CPU and memory limits for each service:
 
 | Service | Memory Limit | CPU Limit |
+
 | app | 256 MB | 0.50 CPU |
+
 | redis | 256 MB | 0.50 CPU |
+
 | nginx | 128 MB | 0.25 CPU |
 
 These limits demonstrate cgroup-based resource control. They prevent one container from consuming all available CPU or memory on the CloudLab node.
