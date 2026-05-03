@@ -5,19 +5,19 @@
 ```mermaid
 graph TD
     Client["Client/Browser<br/>External User"]
-    
+
     Client -->|HTTP Request<br/>Port 8080| Nginx["Nginx Reverse Proxy<br/>Container: url_nginx<br/>Port: 8080→80"]
-    
+
     Nginx -->|Forward Request<br/>DNS: app:8000| App["Python/Uvicorn App<br/>Container: url_shortener_app<br/>Port: 8000"]
-    
+
     App -->|Store/Retrieve URLs<br/>DNS: redis:6379| Redis["Redis Cache<br/>Container: url_redis<br/>Port: 6379"]
-    
+
     Redis -->|Return Data| App
-    
+
     App -->|HTTP Response| Nginx
-    
+
     Nginx -->|HTTP Response<br/>Port 80| Client
-    
+
     style Client fill:#a9a9a9,stroke:#333,stroke-width:2px,color:#000
     style Nginx fill:#a9a9a9,stroke:#333,stroke-width:2px,color:#000
     style App fill:#a9a9a9,stroke:#333,stroke-width:2px,color:#000
@@ -189,3 +189,145 @@ CloudLab is configured using the `profile.py` experiment definition:
 
   - Pulling the latest images from Docker Hub (`docker compose pull`)
   - Starting the full stack (`docker compose up -d`)
+
+
+## Registry-Based Deployment
+
+The custom FastAPI application image is pushed to Docker Hub as:
+
+```text
+theatomicdoc/cloudlab:latest
+```
+
+The CloudLab node does not build the custom application image locally. Instead, it pulls the already-built image from Docker Hub using Docker Compose:
+
+```bash
+sudo docker compose pull
+```
+
+This satisfies the registry deployment requirement because the image build happens outside of CloudLab, while CloudLab only pulls and runs the published image.
+
+## GitHub Actions CI/CD
+
+The repository includes a GitHub Actions workflow at:
+
+```text
+.github/workflows/build-and-push.yml
+```
+
+The workflow runs automatically whenever changes are pushed to the `main` branch.
+
+### Build and Push Job
+
+The first job runs on a GitHub-hosted Ubuntu runner. It performs the following steps:
+
+1. Checks out the repository.
+2. Sets up Docker Buildx.
+3. Logs in to Docker Hub using GitHub repository secrets.
+4. Builds the custom FastAPI image from the repository `Dockerfile`.
+5. Pushes the image to Docker Hub.
+
+The required GitHub repository secrets are:
+
+```text
+DOCKER_USERNAME
+DOCKER_PASSWORD
+```
+
+### CloudLab Deploy Job
+
+The second job runs on a self-hosted GitHub Actions runner installed on the CloudLab node. After the image is built and pushed, this job updates the running CloudLab deployment.
+
+The deployment job runs commands similar to:
+
+```bash
+cd /local/repository
+echo "BASE_URL=http://$(hostname -f):8080" | sudo tee .env
+sudo docker compose pull app
+sudo docker compose up -d --no-deps app
+sudo docker compose ps
+```
+
+This creates the full CI/CD loop:
+
+```text
+Push to GitHub -> GitHub Actions builds image -> Docker Hub receives image -> CloudLab runner pulls image -> Running container updates live
+```
+
+## Self-Hosted Runner on CloudLab
+
+The CloudLab node is registered as a GitHub Actions self-hosted runner. This allows GitHub Actions to execute the deployment job directly on the CloudLab machine.
+
+The runner can be configured from:
+
+```text
+Repository -> Settings -> Actions -> Runners -> New self-hosted runner
+```
+
+After following GitHub's setup instructions on the CloudLab node, the runner can be installed as a service:
+
+```bash
+cd ~/actions-runner
+sudo ./svc.sh install
+sudo ./svc.sh start
+sudo ./svc.sh status
+```
+
+When the runner is online, GitHub can send the deployment job to the CloudLab node and update the running Docker Compose stack.
+
+## Security Best Practices
+
+The project implements several defense-in-depth features in the Dockerfile and Docker Compose configuration.
+
+### Non-Root Container User
+
+The custom FastAPI image creates a non-root user and runs the application as that user:
+
+```dockerfile
+RUN useradd -m appuser
+USER appuser
+```
+
+This reduces the impact of a container compromise because the application process does not run as root inside the container.
+
+### Dropped Linux Capabilities
+
+Each service in `docker-compose.yml` drops Linux capabilities:
+
+```yaml
+cap_drop:
+  - ALL
+```
+
+Linux capabilities split root privileges into smaller pieces. Dropping all capabilities reduces the kernel-level privileges available to the containers and limits what a compromised container can do.
+
+### No New Privileges
+
+Each service also uses:
+
+```yaml
+security_opt:
+  - no-new-privileges:true
+```
+
+This prevents a process inside the container from gaining additional privileges through setuid or setgid binaries.
+
+### CPU and Memory Limits
+
+The Compose file sets CPU and memory limits for each service:
+
+| Service | Memory Limit | CPU Limit |
+| app | 256 MB | 0.50 CPU |
+| redis | 256 MB | 0.50 CPU |
+| nginx | 128 MB | 0.25 CPU |
+
+These limits demonstrate cgroup-based resource control. They prevent one container from consuming all available CPU or memory on the CloudLab node.
+
+
+## Technical Justification
+
+This project is designed to demonstrate more than a basic container launch. The application is split into multiple services so that the web application, data store, and reverse proxy each have separate responsibilities.
+
+FastAPI provides the custom application logic. Redis stores the URL mappings. Nginx acts as the public-facing reverse proxy. Docker Compose defines and connects the services. Docker Hub stores the built application image. GitHub Actions automates the image build and deployment process. CloudLab provides the final demonstration environment.
+
+The security settings show defense in depth by combining non-root execution, dropped Linux capabilities, no-new-privileges enforcement, internal-only service networking, and cgroup-based CPU and memory limits.
