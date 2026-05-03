@@ -1,5 +1,5 @@
-##!/bin/bash
-#set -e
+#!/bin/bash
+set -e
 
 # Install Docker
 curl -fsSL https://get.docker.com | sh
