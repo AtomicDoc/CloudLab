@@ -32,7 +32,11 @@ services:
     volumes:
       - redis_data:/data
     cap_drop:
-      - ALL
+      - SYS_ADMIN
+      - NET_ADMIN
+      - SYS_MODULE
+      - MKNOD
+      - AUDIT_WRITE
     security_opt:
       - no-new-privileges:true
     mem_limit: 256m
@@ -55,7 +59,11 @@ services:
         condition: service_healthy
     restart: unless-stopped
     cap_drop:
-      - ALL
+      - SYS_ADMIN
+      - NET_ADMIN
+      - SYS_MODULE
+      - MKNOD
+      - AUDIT_WRITE
     security_opt:
       - no-new-privileges:true
     mem_limit: 128m
