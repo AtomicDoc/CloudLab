@@ -29,7 +29,7 @@ def generate_code(length: int = 6) -> str:
 def health():
     try:
         r.ping()
-        return {"status": "ok", "redis": "connected", "version": "ci-test-2"}
+        return {"status": "ok", "redis": "connected", "version": "ci-test-1"}
     except redis.RedisError:
         raise HTTPException(status_code=500, detail="Redis is unavailable")
 
